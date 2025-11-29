@@ -2,52 +2,52 @@
 \chapter{PENDAHULUAN} \label{Bab I}
 
 \section{Latar Belakang} \label{I.Latar Belakang}
-Latar Belakang berisi dasar pemikiran, kebutuhan atau alasan yang menjadi ide dari topik tugas akhir. Tujuan utamanya adalah untuk memberikan informasi secukupnya kepada pembaca agar memahami topik yang akan dibahas. Terdapat dua hal yang wajib dikemukakan: \par
+Organisasi dan institusi, termasuk perguruan tinggi, instansi pemerintahan, serta perusahaan bergantung pada dokumen operasional berformat PDF, seperti Standar Operasional Prosedur (SOP), peraturan, buku petunjuk kerja, dan buku pedoman, untuk menjamin konsistensi proses, kepatuhan regulasi, serta transfer pengetahuan. Namun, skala dan kompleksitas dokumen tersebut (banyak bab, istilah teknis, dan rujukan silang) menyulitkan pengguna ketika harus menelusuri jawaban spesifik secara cepat dan tepat; pencarian manual memakan waktu dan rawan salah tafsir karena informasi sering tersebar di beberapa bagian yang saling terkait.
 
-\begin{enumerate}[noitemsep]
-	\item Deskripsi yang luas dan longgar yang berkaitan dengan bidang/masalah di masyarakat, industry dan atau bidang-bidang lainnya. Deskripsi ini mewakili bidang/masalah secara umum yang berkaitan dengan Teknik Informatika, bekerja dan akan terlibat di dalamnya. Sangat disarankan di sini, sebisa mungkin tidak ada Batasan tentang pilihan teknologi yang akan digunakan. Contoh: bidang transportasi, bidang telekomunikasi, bidang Pendidikan, bidang manufaktur, bidang renewable energi, pariwisata, militer, transportasi, kesehatan, pertanian, pengelolaan infrastruktur dan sebagainya.
-	\item Deskripsi lebih khusus dan mendetail yang didapatkan dari poin 1 di atas. Dari deskripsi umum di atas, selanjutkan fokuskan pada fenomena masalah yang akan diangkat. Pendetailan harus mampu membawa masalah kepada masalah yang mennjukkan peran Anda dalam penelitian 
-\end{enumerate}
+Pendekatan pencarian berbasis kata kunci yang lazim digunakan pada PDF memiliki keterbatasan karena hanya mengandalkan kecocokan leksikal. Pendekatan ini tidak mampu menangkap sinonimi, parafrasa, dan hubungan semantik antarkalimat, serta kurang efektif ketika pertanyaan menuntut pemahaman konteks lintas paragraf atau subbab. Kesenjangan ini menegaskan kebutuhan akan solusi yang melampaui sekadar pencarian kata, yakni solusi yang benar-benar memahami isi dokumen dan maksud pertanyaan pengguna.
 
+Kemajuan Pemrosesan Bahasa Alami (Natural Language Processing/NLP) berbasis arsitektur \textit{transformer} membuka peluang untuk membangun sistem \textit{question answering} (QA) yang mampu memahami pertanyaan dan mengekstraksi jawaban dari konteks dokumen panjang secara lebih presisi \cite{vaswani2017attention,devlin2019bert}. Di ranah bahasa Indonesia, keluarga model IndoBERT, termasuk varian ringan IndoBERT-Lite, menyediakan fondasi efisien untuk diadaptasi (\textit{fine-tuning}) ke tugas QA sehingga tetap terjangkau dari sisi komputasi \cite{wilie2020indobert}. Selain itu, integrasi teknik pengambilan informasi (\textit{retrieval}) sebelum inferensi, sebagaimana ditunjukkan pada paradigma \textit{retrieval-augmented}, dapat membantu sistem menjawab pertanyaan berbasis pengetahuan yang tersebar di dokumen besar \cite{lewis2020rag}, sementara studi QA atas dokumen panjang/terstruktur terus menyoroti tantangan praktis terkait segmentasi konteks, pemilihan paragraf relevan, dan keterlacakan sumber (mis. PDF/long-document QA).
+
+Berdasarkan tinjauan tersebut, penelitian ini mengangkat dua \textit{research gap}: (1) belum ada penelitian yang secara khusus mengevaluasi IndoBERT-Lite untuk QA pada dokumen PDF nyata berbahasa Indonesia; (2) belum ada integrasi dan evaluasi sistematis pipeline \textit{retrieval} + QA yang ditujukan untuk dokumen non-dataset (PDF) institusional. Untuk menjawab gap ini, penelitian memanfaatkan model pralatih \texttt{Wikidepia/indobert-lite-squad} sebagai titik awal \textit{fine-tuning} dan dataset \texttt{jakartaresearch/indoqa} sebagai sumber pasangan konteks–pertanyaan–jawaban berbahasa Indonesia, dengan fokus evaluasi pada skenario dunia nyata.
 \section{Rumusan Masalah} \label{I.Rumusan Masalah}
-Merumuskan masalah secara konkrit, bentuk pertanyaan fakta / kebenaran yang masih dipertanyakan \par
+Berdasarkan latar belakang, penelitian ini difokuskan pada perancangan dan evaluasi sistem QA berbahasa Indonesia untuk dokumen PDF institusional dalam skala yang realistis untuk diselesaikan. Rumusan masalah yang dikaji adalah:
 
-Dari pendahuluan di atas, mahasiswa diharapkan dapat memformulasikan masalah engineering yang solid. Masalah yang kemudian akan diformulasi mahasiswa harus terdefinisi dengan baik (harus jelas, tidak ambigu/ada makna ganda, tanpa menggunakan jargon), masalah harus real (benar-benar ada masalah terebut) sehingga nantinya akan ada solusi yang konkrit. Perlu dipertimbangkan juga masalah tersebut harus bisa dipecahkan dalam waktu maksimal 1 semester oleh mahasiswa dengan alokasi waktu per minggu tidak lebih dari 20 jam per minggu. \par
-
-Lebih jelasnya masalah yang diharapkan adalah seperti dalam 3 poin di bawah ini. Jika tidak mengandung semua unsur dibawah maka tugas akhir ini tidak memenuhi syarat sebagai tugas akhir. \par
-
-\begin{enumerate}[noitemsep]
-	\item Harus ada proses perancangan yang utuh dari penentuan masalah real yang perlu dipecahkan, 
-	\item Harus menjelaskan spesifikasi yang akan dibuat
-	\item Harus ada implementasi dalam bentuk salah satu di bawah ini:
-	\begin{enumerate}
-		\item Hardware/perangkat keras
-		\item Software/perangkat lunak
-		\item Proses/simulasi yang dibuat sendiri (Matlab, C/C++, Python, dan lain-lain) bukan melalui software yang murni dan sudah paten dan tinggal memasukkan data (ETAP, EDSA, SPSS, dan lain-lain)
-	\end{enumerate}
+\begin{enumerate}[noitemsep,label=\textbf{RQ\arabic*:}]
+	\item Bagaimana mengembangkan pipeline QA berbasis \textit{retrieval} yang menerima input PDF + pertanyaan, mengekstraksi dan menyegmentasi teks, melakukan \textit{indexing} serta pemilihan paragraf relevan, dan menghasilkan jawaban beserta referensi paragraf sumber sebagai keluaran yang terstandar?
+	\item Bagaimana performa model IndoBERT-Lite yang di-\textit{fine-tune} pada dataset IndoQA (diukur dengan metrik EM/F1) ketika digunakan sebagai penjawab ekstraktif pada konteks paragraf hasil \textit{retrieval}, dibandingkan performa pralatihnya?
+	\item Seberapa akurat sistem end-to-end dalam menjawab pertanyaan berbasis dokumen PDF nyata (mis. SOP atau pedoman) yang dipilih, diukur dengan EM/F1 per pertanyaan, serta apa sumber kesalahan utama dari tahap \textit{retrieval} maupun ekstraksi jawaban?
 \end{enumerate}
 
-Hasil rancangan dalam bentuk hardware/software/simulasi tersebut harus diuji dan diverifikasi apakah bekerja dengan baik atau belum Jika belum bekerja baik, mahasiswa harus bisa menjelaskan alasannya dan perbaikannya ke depan (walau pun saat tugas akhir ini selesai, alat/software/simulasi belum bisa bekerja).\par
-
-Selain itu, rumusan sangat disarankan untuk melibatkan pengalaman multidisiplin. Misalnya melibatkan unsur-unsur seperti seni, ekonomi, mekanik, politik, proses kimia, etika, kesehatan, dan sebagainya. Contoh-contoh rumusan masalah yang \textbf{tidak disarankan}: \par
-
-\begin{enumerate}[noitemsep]
-	\item \textbf{Masalah tidak real dan tidak terlalu hipotetis}. Misalnya, topik riset atau topik untuk lomba (contoh: mencari metode paling cepat untuk menentukan posisi kebakaran di dalam hutan).
-	\item Rumusan untuk membuat alat/produk yang \textbf{tidak dapat diimplemetasikan dan diukur/diuji dalam waktu maksimal 2 semester}. Misalnya membuat roket dengan daya jangkau 500 km.
-	\item \textbf{Solusi terlalu kompleks} sehingga dalam satu tahun hanya dapat menghasilkan bagian kecil dari solusi yang diharapkan Rumusan masalah berisi ringkasan fenomena dan masalah.
-\end{enumerate}
-
-Rumusan masalah akan dijawab di \nameref{V.Kesimpulan}. Rumusan Masalah disarankan untuk ditulis per poin.
+Rumusan masalah ini akan dijawab melalui rancangan sistem, implementasi perangkat lunak, eksperimen terukur, dan analisis yang dilaporkan sampai \nameref{V.Kesimpulan}.
 
 \section{Tujuan Penelitian} \label{I.Tujuan}
-Tujuan diisikan tujuan dari penelitian yang dilakukan, berdasarkan sub-bab \nameref{I.Latar Belakang} dan \nameref{I.Rumusan Masalah} dilengkapi dengan spesifikasinya. Tuliskan Tujuan sesuai dengan poin Rumusan Masalah. \par
+Merujuk pada \nameref{I.Latar Belakang} dan \nameref{I.Rumusan Masalah}, tujuan penelitian ini dirumuskan sebagai berikut:
+\begin{enumerate}[noitemsep,label=\textbf{RO\arabic*:}]
+	\item Mengembangkan pipeline QA berbasis \textit{retrieval} untuk dokumen PDF berbahasa Indonesia, mencakup ekstraksi/segmentasi PDF, \textit{indexing}, pemilihan paragraf relevan, serta penyajian jawaban berikut referensi paragraf sumber.
+	\item Memperoleh model QA IndoBERT-Lite hasil \textit{fine-tuning} pada dataset IndoQA, dan mengukur peningkatan kinerjanya (EM/F1) dibandingkan model pralatih.
+	\item Mengevaluasi performa sistem QA end-to-end pada dokumen PDF target (mis. SOP atau pedoman), diukur dengan EM/F1 per pertanyaan serta analisis kesalahan dari tahap \textit{retrieval} dan ekstraksi jawaban.
+\end{enumerate}
 
 \section{Batasan Masalah} \label{I.Batasan}
 Batasan yang dimaksud disini ialah batasan dari penelitian tugas akhir yang dilakukan. Batasan masalah ditujukan agar tugas akhir yang dilakukan tidak terlalu luas, dan menjadi lebih realistis untuk diselesaikan. \par
 
-\section{Manfaat Penelitian} \label{I.Manfaat}
-Manfaat tugas akhir yang dilakukan didefinisikan sebagai manfaat yang diperoleh ketika tugas akhir telah selesai dilakukan. Manfaat dapat berupa manfaat untuk: \textbf{mahasiswa, program studi teknik informatika, ITERA, masyarakat, dunia akademisi, dan dunia penelitian}. \par
+\begin{enumerate}[noitemsep]
+	\item Dokumen yang diuji adalah PDF berbasis teks (bukan hasil pemindaian tanpa OCR), sehingga ekstraksi teks tidak membahas pipeline OCR.
+	\item Task QA bersifat ekstraktif (jawaban diambil langsung dari paragraf konteks) dan tidak mencakup generatif bebas.
+	\item Model utama yang digunakan adalah IndoBERT-Lite; model lain hanya sebagai pembanding ringan jika diperlukan.
+	\item Data \textit{fine-tuning} utama adalah dataset IndoQA; penyesuaian domain hanya sebatas format PDF target, tanpa kurasi dataset baru berskala besar.
+	\item Evaluasi kinerja menggunakan metrik EM dan F1 untuk level jawaban, serta analisis kesalahan pada tahap \textit{retrieval} dan ekstraksi jawaban.
+\end{enumerate}
 
+\section{Manfaat Penelitian} \label{I.Manfaat}
+Manfaat yang ingin dicapai, diharapkan dapat memberikan dampak positif terhadap mahasiswa, program studi Teknik Informatika, ITERA, pengguna institusional, maupun komunitas akademik/peneliti, ialah sebagai berikut: \par
+
+\begin{enumerate}[noitemsep]
+	\item Tersedianya pipeline QA PDF berbahasa Indonesia yang dapat diterapkan pada dokumen institusional (mis. SOP, peraturan kampus/perusahaan), sehingga akses informasi menjadi lebih cepat dan presisi.
+	\item Model QA berbasis IndoBERT-Lite yang telah di-\textit{fine-tune} dan tervalidasi, memberikan referensi performa (EM/F1) untuk riset dan pengembangan lebih lanjut.
+	\item Pemanfaatan dataset internal PDF untuk QA yang selama ini jarang dieksplorasi, membuka peluang studi lanjutan tentang domain adaption dan evaluasi QA pada dokumen dunia nyata.
+	\item Bagi mahasiswa/program studi: pengalaman merancang, mengimplementasikan, dan mengevaluasi sistem AI terapan dengan batasan sumber daya; bagi akademisi/peneliti: kontribusi studi kasus QA PDF berbahasa Indonesia yang dapat direplikasi atau diperluas.
+\end{enumerate}
 
 \section{Sistematika Penulisan} \label{I.Sistematika}
 Sistematika penulisan berisi pembahasan apa yang akan ditulis disetiap Bab. Sistematika pada umumnya berupa paragraf yang setiap paragraf mencerminkan bahasan setiap Bab. \par

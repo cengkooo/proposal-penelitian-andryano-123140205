@@ -28,11 +28,11 @@
 \usepackage[bookmarks]{hyperref}
 \usepackage{lipsum}
 \hypersetup{
-	colorlinks,
-	citecolor=black,
-	filecolor=black,
-	linkcolor=black,
-	urlcolor=black
+    colorlinks=true,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=blue
 }
 
 % Ukuran kertas A4
@@ -55,7 +55,7 @@
 
 % Font
 %\usepackage{mathptmx} 
-\usepackage{newtx} 
+\usepackage{mathptmx} % Font serupa Times agar tetap kompatibel di sistem lama
 % Times New Roman itu copyright dari Microsoft. Ini alternatifnya (RDB)
 
 % Judul bahasa Indonesia
@@ -68,6 +68,7 @@
 
 % Format citation
 \usepackage[backend=biber,citestyle=ieee]{biblatex}
+\usepackage{csquotes} % Disarankan oleh biblatex untuk handling quotation
 
 % Remove "In:" before journal titles
 \renewbibmacro{in:}{}
@@ -89,7 +90,6 @@
 
 % Package untuk link di daftar isi.
 \usepackage{titlesec}       % Package Format judul
-\usepackage{parskip}
 \usepackage{ragged2e}		% Alignment
 \usepackage{multirow}		% Untuk bisa merge cell di tabel
 \usepackage{tikz}			% Untuk menggambar kotak pas foto
@@ -112,6 +112,7 @@
 	\renewcommand{\headrulewidth}{0pt}
 	\fancyhead[R]{\thepage}
 }
+\setlength{\headheight}{15pt} % Hindari peringatan headheight dari fancyhdr
 
 % Setting judul
 \chapterfont{\centering \large}
@@ -146,7 +147,6 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
-\usepackage{geometry}
 
 
 % Setting nomor pada subbsubsubbab
@@ -234,7 +234,7 @@
     \vspace{0.5em}
     % Removed the fcolorbox and kept only the minipage
     \begin{minipage}{0.9\linewidth}
-      \begin{spacing}{0.7} % ⬅️ Spasi 1.0 hanya di rumus
+      \begin{spacing}{0.7} % Spasi 0.7; spasi 1.0 hanya di rumus
       \begin{equation*}
       \begin{gathered}
         #2
@@ -265,10 +265,6 @@
 \renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}
 \renewcommand\theequation{Rumus~\arabic{section}.\arabic{equation}}
 
-\usepackage{listings}
-\usepackage{xcolor}
-\usepackage{geometry}
-
 % Pengaturan untuk listings
 \lstset{
     language=Python,                  % Bahasa pemrograman
@@ -286,13 +282,12 @@
     aboveskip=0pt,                    % Jarak di atas kode
     belowskip=0pt,                    % Jarak di bawah kode
     lineskip=-1pt,
-    extendedchars=true                 % Mengizinkan karakter non-ASCII
+    extendedchars=true,                % Mengizinkan karakter non-ASCII
     escapeinside={\%*}{*)}             % Escape karakter LaTeX dalam listings
 }
 
 
 % Daftar Kode
-\usepackage{tocloft}
 \newcommand{\listoflistingscaption}{DAFTAR KODE}
 \renewcommand{\lstlistingname}{Kode}
 \renewcommand{\lstlistlistingname}{\listoflistingscaption}
@@ -334,14 +329,6 @@
 \renewcommand\@dotsep{2.5}  % Coba nilai yang berbeda: 1.5, 2.0, 2.5, 3.0, dll.
 \makeatother
 
-
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,   % warna untuk \ref, \autoref, dll
-    urlcolor=blue,     % warna untuk \href (tautan web)
-    citecolor=black    % warna untuk \cite
-}
 
 \usepackage{cleveref}
 % Setelah paket cleveref dimuat

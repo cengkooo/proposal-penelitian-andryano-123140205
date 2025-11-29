@@ -31,7 +31,7 @@
 			{geometry} 
 
 \input{config/config.sty} % Import konfigurasi laporan
-\bibliography{references.bib} % Import list Daftar Pustaka
+\addbibresource{references.bib} % Import list Daftar Pustaka (gunakan biber)
 
 \begin{document}
 
@@ -40,9 +40,9 @@
     %----------------------------------------------------------------%
     
     % Judul Tugas Akhir, dalam Bahasa Indonesia	
-    \title{Judul Tugas Akhir Dengan Metode ABC (Studi Kasus: XYZ)}
+    \title{(Sistem Question Answering Berbasis Transformer untuk Dokumen PDF Berbahasa Indonesia Menggunakan Fine-Tuning IndoBERT-Lite pada Dataset IndoQA)}
     % Judul Tugas Akhir dalam Bahasa Inggris
-    \titleEN{Thesis Title With ABC Method (Case Study: XYZ)}
+    \titleEN{(Transformer-Based Question Answering System for Indonesian PDF Documents Using Fine-Tuned IndoBERT-Lite on the IndoQA Dataset)}
     % JUDUL AKAN DITULIS DALAM HURUF KAPITAL; Font size 16 pt; Bold; Tidak melebihi 4 baris
     
     % Informasi Mahasiswa
@@ -162,6 +162,7 @@
     \newpage
     \phantomsection% 
     \addcontentsline{toc}{chapter}{DAFTAR PUSTAKA}
+    \nocite{*} % Pastikan bibtex punya entri meskipun belum ada sitasi di teks
     \printbibliography[title={Daftar Pustaka}]
 	%----------------------------------------------------------------%
     % Lampiran
