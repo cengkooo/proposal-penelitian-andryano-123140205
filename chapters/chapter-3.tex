@@ -2,57 +2,120 @@
 \chapter{METODE PENELITIAN} \label{Bab III}
 
 \section{Alur Penelitian} \label{III.Alur}
-Pada penelitian ini, alur dirancang untuk memastikan setiap tahapan pemrosesan dilakukan secara sistematis dan efisien. Alur penelitian ini mencerminkan langkah-langkah utama terkait bagaimana proses yang dilakukan dalam penelitian, dari awal sampai dengan akhir. Gambarkan dalam bentuk diagram alir (\textit{flowchart}) seperti yang terlihat pada Gambar \ref{fig:3.alur}. \par
-
-\begin{figure}[H] % Kalau menggunakan H, posisi gambar akan tepat dibawah teks
-    \centering
-    \includegraphics[width=0.6\textwidth]{figure/flowchart.jpg}
-    \caption{Alur Penelitian}
-    \label{fig:3.alur}
-\end{figure}
-
-\section{Penjabaran Langkah Penelitian} \label{III.Jabar Alur}
-Jelaskan secara general langkah-langkah alur penelitian, yang sudah tergambar dalam flowchart di subbab \ref{III.Alur}. Subsubbab berikut harus sesuai dengan jumlah entitas langkah pada alur penelitian. \par
-
-\subsection{Langkah 1} \label{III.Langkah 1}
-Penjelasan Langkah 1. \par
-
-\subsection{Langkah 2} \label{III.Langkah 2}
-Penjelasan Langkah 2. \par
-
-\section{Alat dan Bahan Tugas Akhir} \label{III.Alat dan Bahan}
-Berisi alat-alat dan bahan-bahan yang digunakan dalam penelitian. \par
-
-\subsection{Alat} \label{III.Alat}
-Alat yang digunakan untuk melakukan penelitian, dapat berupa computer, PC, Arduino, raspberry, etc. Contoh: \par
+Penelitian ini merancang dan mengevaluasi sistem QA PDF berbahasa Indonesia berbasis
+\textit{transformer} dengan \textit{fine-tuning} IndoBERT-Lite pada IndoQA
+\cite{wilie2020indobert,indoqa2023}. Kerangka kerja mengikuti tahapan:
 \begin{enumerate}[noitemsep]
-	\item \textit{Notebook} dengan spesifikasi minumum sistem operasi Windows 11, processor AMD Ryzen 5 7430 CPU @ 6 core/2,3 GHz, RAM 16GB DDR4, grafis AMD Radeon RX Vega 7 2GB, SSD 512 GB.
-	\item \textit{Smartphone} dengan spesifikasi OS Android OS 12, CPU Snapdragon 778G Octa-core, GPU Adreno 642L, memori 128 GB, RAM 6 GB.
-	\item Platform game engine Godot v4.3
-	\item Code editor Microsoft Visual Studio Code
-	\item Github
+    \item Akuisisi dan kurasi data (IndoQA + PDF institusional).
+    \item Ekstraksi \& segmentasi PDF (layout-aware dan \textit{fixed window}).
+    \item Indeks \& \textit{retrieval} (BM25 baseline; opsional dense).
+    \item \textit{Reader} ekstraktif (IndoBERT-Lite di-\textit{fine-tune}).
+    \item Evaluasi berlapis (komponen, end-to-end, ablation, V\&V).
 \end{enumerate}
 
-\subsection{Bahan} \label{III.Bahan}
-Bahan yang digunakan/diperlukan untuk melakukan penelitian, dapat berupa: \par
-\begin{enumerate}[noitemsep]
-	\item Dataset pihak lain yang diperoleh dengan izin atau dalam lisensi yang diizinkan untuk digunakan secara langsung,
-	\item Dataset pihak pertama yang disusun sendiri melalui quisioner, observasi, atau interview,
-	\item Dokumen panduan yang mengacu pada standar, hasil tugas akhir, atau artikel yang disitasi dan digunakan. 
-\end{enumerate}
+\section{Metode Pengumpulan Data} \label{III.Pengumpulan}
+Sumber data sekunder. Dataset IndoQA \cite{indoqa2023} (konteks--pertanyaan--
+jawaban) digunakan untuk \textit{fine-tuning} dan validasi reader, dengan split
+train/val/test (80/10/10 atau sesuai kartu dataset).
 
-\section{Metode Pengembangan} \label{III.Metode}
-Membahas mengenai metode yang digunakan dalam penelitian, berdasarkan dasar teori yang sebelumnya sudah dijelaskan pada subbab \ref{II.Teori}. Setiap Tugas Akhir wajib memiliki metode dalam pelaksanaannya yang sesuai dengan penelitian yang dikerjakan: \par
-\begin{enumerate}[noitemsep]
-	\item Alur pengembangan tugas akhir, menggunakan flowchart
-	\item Cara pengumpulan data yang digunakan (Kuesioner, Wawancara, pengujian, dan lainnya)
-	\item Metode pengembangan tugas akhir (Metode Waterfall, Agile, RAD, dan lainnya).
-	\item Metode pengujian penelitian
-\end{enumerate}
-Subbab ini akan berhubungan erat dengan Bab \ref{Bab IV}. \par
+Sumber data dari file atau dokumen berupa PDF. Dipilih 1--2 PDF institusional (SOP/peraturan)
+berteks (non-scan), tebal $\geq$30 halaman, terstruktur (bab/subbab). Ekstraksi teks
+memakai \texttt{pdfminer.six}/\texttt{PyPDF2}; OCR dikecualikan sesuai batasan.
 
-\section{Ilustrasi Perhitungan Metode} \label{III.Ilustrasi}
-Penjelasan contoh perhitungan bagi penelitian tugas akhir yang menggunakan algoritma perhitungan tertentu. Rumus perhitungan berdasarkan rumus yang sudah dijelaskan sebelumnya di Bab \ref{II.Teori}. \par
+Gold standard PDF. Disusun 100--200 pasang Q--A dari PDF oleh dua anotator;
+kesepakatan dihitung dengan Cohen’s $\kappa$ (target $\geq$ 0{,}75). Pertanyaan disusun
+berdasar kebutuhan domain; data sensitif dihapus, memakai dokumen publik/izin internal
+dan atribusi sumber.
 
-\section{Rancangan Pengujian} \label{III.Rancang_Uji}
-Penjabaran terkait rancangan pengujian, pengujian perangkat keras, lunak, fungsional, dan non-fungsional. Berikan juga hipotesis hasil yang diharapkan dari penelitian. \par
+\section{Metode Perancangan/Pengembangan} \label{III.Pengembangan}
+\subsection{Arsitektur Sistem}
+Modular: ingestion PDF $\rightarrow$ segmentasi $\rightarrow$ indeks $\rightarrow$
+retrieval $\rightarrow$ reader (QA) $\rightarrow$ pelacakan sumber $\rightarrow$
+antarmuka. Konsep \textit{retrieval-augmented} \cite{lewis2020rag,karpukhin2020dpr} dan
+\textit{transformer} \cite{vaswani2017attention,devlin2019bert,wilie2020indobert} menjadi
+dasar, sementara PDFTriage menekankan struktur dokumen \cite{saad2023pdftriage}.
+
+\subsection{Pra-pemrosesan dan Segmentasi}
+\begin{itemize}
+    \item Normalisasi karakter (Unicode, spasi), penggabungan tanda baca per kalimat/
+    paragraf. Untuk retrieval sparse: \textit{lowercase}, normalisasi angka/tanggal,
+    \textit{stopword} opsional; untuk reader: teks dipertahankan apa adanya.
+    \item Segmentasi layout-aware: deteksi heading/subheading, pecah per subbagian atau
+    paragraf logis (150--250 kata). Fallback: jendela 384 token dengan \textit{stride}
+    128. Struktur membantu keterlacakan sumber \cite{saad2023pdftriage}.
+\end{itemize}
+
+\subsection{Indeks dan Retrieval}
+\begin{itemize}
+    \item BM25 (Pyserini/Lucene) sebagai baseline: $k1\approx0{,}9$--$1{,}2$, $b\approx
+    0{,}4$--$0{,}75$, \textit{top-k} awal = 10.
+    \item Opsional dense retrieval (mis. bi-encoder SEA-LION) untuk studi banding
+    Recall@k.
+    \item \textit{Top-k} (5--10) paragraf kandidat dikirim ke reader.
+\end{itemize}
+
+\subsection{Model QA dan Fine-tuning}
+\begin{itemize}
+    \item Basis: \texttt{Wikidepia/indobert-lite-squad} (extractive QA).
+    \item Data: IndoQA train/val/test.
+    \item Hiperparameter awal: \texttt{max\_seq\_length}=384, \texttt{doc\_stride}=128,
+    \texttt{max\_answer\_length}=30, \texttt{batch\_size}=16, \texttt{lr}=2e-5,
+    \texttt{epochs}=3--5, \texttt{weight\_decay}=0.01, \texttt{warmup\_ratio}=0.1, fp16,
+    \texttt{seed}=42, \textit{early stopping} berdasar F1 (patience 2).
+\end{itemize}
+
+\subsection{Inferensi End-to-End}
+Menerima pertanyaan $\rightarrow$ \textit{retrieve} \textit{top-k} paragraf $\rightarrow$
+reader memproduksi span jawaban + skor $\rightarrow$ pilih skor tertinggi $\rightarrow$
+kembalikan jawaban beserta paragraf/halaman sumber.
+
+\subsection{Kontrol Versi \& Reproduksibilitas}
+\begin{itemize}
+    \item Berkas lingkungan (\texttt{requirements.txt}), konfigurasi YAML untuk
+    hiperparameter, \textit{random seed}, dan jejak \textit{commit} model.
+    \item \textit{Experiment tracking} (MLflow/Weights \& Biases) untuk metrik.
+\end{itemize}
+
+\section{Metode Pengujian/Validasi} \label{III.Pengujian}
+\subsection{Evaluasi Komponen}
+\begin{itemize}
+    \item Retrieval-only: Recall@k (k $\in\{1,3,5,10\}$), MRR@k terhadap paragraf emas.
+    \item Reader-only (IndoQA): EM dan F1 pada val/test IndoQA.
+\end{itemize}
+
+\subsection{Evaluasi End-to-End PDF}
+\begin{itemize}
+    \item Dataset: himpunan Q--A anotasi PDF.
+    \item Prosedur: retrieval $\rightarrow$ reader per pertanyaan; ukur EM/F1; catat
+    paragraf/halaman sumber dan klasifikasi kesalahan (retrieval vs ekstraksi).
+\end{itemize}
+
+\subsection{Uji Statistik dan Ablasi}
+\begin{itemize}
+    \item Bootstrap 1000$\times$ untuk CI 95\% EM/F1; uji McNemar untuk dua sistem.
+    \item Ablasi: segmentasi layout-aware vs paragraf polos; variasi \textit{top-k}
+    (5/10); BM25 vs dense retrieval.
+\end{itemize}
+
+\subsection{Validasi Ahli \& Kegunaan (opsional)}
+\begin{itemize}
+    \item \textit{Expert review}: 20 sampel jawaban dinilai 3 penilai
+    (benar/parsial/salah) + justifikasi.
+    \item Uji kegunaan ringan (SUS) pada 8--12 pengguna internal untuk prototipe
+    antarmuka tanya--jawab.
+\end{itemize}
+
+\subsection{Kriteria Penerimaan}
+\begin{itemize}
+    \item Reader (IndoQA): F1 $\geq$ baseline publik HF.
+    \item End-to-end PDF: F1 $\geq$ 0{,}60 dan \textit{traceability} $\geq$ 95\%.
+    \item Retrieval PDF: Recall@10 $\geq$ 0{,}85.
+\end{itemize}
+
+\subsection{Risiko dan Mitigasi}
+\begin{itemize}
+    \item PDF scan/gambar: dikecualikan; OCR hanya pekerjaan lanjutan.
+    \item Jawaban sangat pendek: atur \texttt{max\_answer\_length} dan normalisasi
+    pasca-proses.
+    \item Batas komputasi: gunakan IndoBERT-Lite, fp16, \textit{gradient accumulation}.
+\end{itemize}

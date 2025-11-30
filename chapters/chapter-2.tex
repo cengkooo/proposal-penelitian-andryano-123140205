@@ -2,109 +2,106 @@
 \chapter{TINJAUAN PUSTAKA} \label{Bab II}
 
 \section{Tinjauan Pustaka} \label{II.Tinjauan}
-Berisi penelitian terdahulu yang menjadi konsep / pendukung penelitian yang dilakukan. Lakukan pembahasan secara sistematis dengan menjelaskan masalah apa yang diangkat di penelitian terdahulu, metode yang digunakan, kontribusi yang diberikan, serta analisis penulis terkait dengan keunggulan atau keterbatasannya. Tuangkan perbandingan penelitian terdahulu dengan penelitian yang akan dikerjakan, minimal 5 jurnal pembanding (4-5 tahun terakhir). Kemudian penulis sebaiknya melakukan rangkuman terutama terkait dengan peluang pengembangan atau tugas akhir yang akan dilakukan \par
-
-Perujukan literatur dapat dilakukan dengan menambahkan entri baru dalam file \verb|references.bib|. Cara merujuk sitasi menggunakan \verb|\cite{nama label sitasi}|. Hasil sitasi seperti ini: \cite{knuth2001art}, \cite{Vogels2006Am}, atau \cite{Suryanto2019MAE}\cite{Ivanny2014Banding}. Daftar Pustaka hanya akan memunculkan sitasi yang direferensikan menggunakan command \verb|\cite{}|. \par
-
-Tuliskan \textbf{judul jurnal, penulis jurnal, tahun jurnal terbit, penjelasan isi jurnal, metode penelitian, hasil penelitian \& pengujian}. \par
+Bab ini merangkum literatur utama terkait QA dokumen PDF berbahasa Indonesia, dengan
+fokus pada (i) arsitektur \textit{transformer}, (ii) \textit{retrieval-augmented} QA, dan
+(iii) ekosistem model/data Indonesia. Lima karya paling relevan dipilih karena langsung
+menyangga rancangan pipeline PDF \textrightarrow{} segmentasi \textrightarrow{}
+retrieval \textrightarrow{} reader IndoBERT-Lite:
 \begin{enumerate}[noitemsep]
-	\item Sistem Informasi Pendaftaran Haji dan Umroh Di PT Multazam Sriwijaya Barakah Palembang Menggunakan Metode Rapid Application Development. \blindtext
-	\item Sistem Informasi Umroh Di PT XYZ Lampung Menggunakan Metode Rapid Application Development. \blindtext
+    \item Saad-Falcon et al. (PDFTriage) \cite{saad2023pdftriage}: QA dokumen panjang
+    berstruktur (PDF), menekankan segmentasi blok/layout sebelum retrieval.
+    \item Lovenia et al. (SEACrowd) \cite{lovenia2024seacrowd}: ekosistem data/benchmark
+    Asia Tenggara; relevan untuk legitimasi evaluasi bahasa Indonesia.
+    \item Wilie et al. (IndoNLU/IndoBERT) \cite{wilie2020indonlu}: model/dataset kunci
+    untuk NLU Indonesia; landasan pemilihan IndoBERT/IndoBERT-Lite.
+    \item Karpukhin et al. (DPR) \cite{karpukhin2020dpr}: baseline \textit{dense}
+    retrieval untuk memilih paragraf relevan sebelum modul QA.
+    \item Jurafsky \& Martin (SLP 3rd draft) \cite{jurafsky2025slp}: kerangka teori NLP,
+    IR, dan evaluasi yang netral akademik.
 \end{enumerate}
-
-Tabel ringkasan tinjauan pustaka ditulis setelah penjelasan masing-masing jurnal. \par
-\begin{longtable}{| b{0.05\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|p{0.15\textwidth}|p{0.25\textwidth}|} % Longtable berguna agar tabel dapat terpotong di halaman baru
-	\caption{Literasi Penelitian Terdahulu}
-	\label{table:2.literasi}\\
-	\hline
-	\textbf{No.} & \textbf{Judul} & \textbf{Masalah} & \textbf{Metode} & \textbf{Hasil} \\
-	\hline
-	\endfirsthead % Header tabel untuk halaman pertama
-	\hline
-	\textbf{No.} & \textbf{Judul} & \textbf{Masalah} & \textbf{Metode} & \textbf{Hasil} \\
-	\hline
-	\endhead % Header tabel untuk halaman selanjutnya (repeat header row)
-	1. & Sistem Informasi Pendaftaran Haji dan Umroh Di PT Multazam Sriwijaya Barakah Palembang Menggunakan Metode Rapid Application Development & Belum adanya sistem untuk pendaftaran haji \& umrah & Rapid Application Development & Sistem Informasi Pendaftaran Haji dan Umroh di PT Multazam Sriwijaya Barakah Palembang\\ 
-	\hline
-	2. & Sistem Informasi Umroh Di PT XYZ Lampung Menggunakan Metode Rapid Application Development & Belum adanya sistem untuk pendaftaran haji \& umrah & Rapid Application Development & Sistem Informasi Pendaftaran Umroh di PT XYZ Lampung\\ 
-	\hline
-	3. & Sistem Informasi Umroh Di PT XYZ Lampung Menggunakan Metode Rapid Application Development & Belum adanya sistem untuk pendaftaran haji \& umrah & Rapid Application Development & Sistem Informasi Pendaftaran Umroh di PT XYZ Lampung\\ 
-	\hline
-\end{longtable}
+Karya fondasional \cite{vaswani2017attention,devlin2019bert,wilie2020indobert,lewis2020rag}
+digunakan sebagai rujukan arsitektur/pipeline pendukung.
 
 \section{Dasar Teori} \label{II.Teori}
-Berisi teori/konsep yang berkaitan/digunakan dalam tugas akhir yang dikerjakan. Gunakanlah data melalui buku/jurnal referensi, publikasi tugas akhir, penelitian, buku, dan informasi web yang dapat dipertanggungjawabkan, hindari penggunaan dasar teori melalui tautan Wikipedia, surat kabar, atau portal berita, yang dapat memiliki isi yang tidak bersifat fakta. \par
+Transformer dan self-attention. Vaswani et al. \cite{vaswani2017attention}
+memperkenalkan \textit{multi-head self-attention} yang menggantikan rekuren, memungkinkan
+pemodelan dependensi jarak jauh secara paralel. Devlin et al.
+\cite{devlin2019bert,wilie2020indobert} menerapkannya pada BERT/IndoBERT untuk tugas
+ekstraktif.
 
-\subsection{Teori 1} \label{II.Teori1}
-Berikut adalah contoh penyisipan tabel menggunakan \verb|\begin{longtable}{}|: \par
-	
-	\begin{longtable}{|c|c|c|c|}
-		\caption{Contoh Tabel}
-		\label{table:2.contoh}\\
-		\hline
-		Col1 & Col2 & Col2 & Col3 \\
-		\hline
-		\endhead
-		1 & 6 & 87837 & 787 \\ 
-		\hline
-		2 & 7 & 78 & 5415 \\
-		\hline
-		3 & 545 & 778 & 7507 \\
-		\hline
-		4 & 545 & 18744 & 7560 \\
-		\hline
-		5 & 88 & 788 & 6344 \\
-		\hline
-	\end{longtable}
+Retrieval-augmented QA. Lewis et al. \cite{lewis2020rag} memisahkan tahap
+\textit{retriever} (dense) dan reader/generator, sehingga konteks panjang tidak perlu
+dimuat sekaligus. DPR \cite{karpukhin2020dpr} menjadi baseline \textit{dense retriever}
+untuk memilih paragraf relevan.
 
-\subsubsection{Subsubbab} \label{II.Teori1.1}
-Berikut adalah contoh subsubbab. Ini adalah level subbab maksimal dalam laporan Tugas Akhir, dan tidak boleh lebih dalam. \par
+Dokumen panjang/berlayout. PDFTriage \cite{saad2023pdftriage} menegaskan bahwa
+segmentasi blok teks/layout pada PDF sebelum retrieval meningkatkan presisi dan
+keterlacakan paragraf sumber.
 
-Gambar \ref{fig:2.contoh} adalah contoh Gambar yang diambil dari internet yang harus dicantumkan sumbernya dan memiliki lisensi Creative Common. Jika gambar adalah milik peneliti lain atau tidak dibuat atau diambil sendiri maka peneliti wajib meminta izin kepada peneliti lain tersebut untuk mencantumkan gambar. Gunakan \verb|\begin{figure}| untuk memasukkan gambar. Gunakan \verb|\caption{[nama caption]}| untuk memberikan caption gambar. Nomor caption akan diurutkan secara otomatis. Jangan lupa untuk melabeli setiap gambar dengan \verb|\label{[nama label]}|, agar bisa direferensi menggunakan \verb|\ref{[nama label]}| \par
-\begin{figure}[H] % Kalau menggunakan H, posisi gambar akan tepat dibawah teks
-	\centering
-	\includegraphics[width=0.6\textwidth]{figure/keyboard.jpg}
-	\caption{Contoh gambar dan caption}
-	\label{fig:2.contoh}
-	{\footnotesize Sumber: Contoh} % Untuk memberikan sumber
-\end{figure}
+Ekosistem Indonesia. IndoNLU/IndoBERT \cite{wilie2020indonlu,wilie2020indobert}
+menyediakan backbone dan tolok ukur; SEACrowd \cite{lovenia2024seacrowd} memperkuat
+relevansi evaluasi lintas bahasa Asia Tenggara. SLP \cite{jurafsky2025slp} memberi
+kerangka konseptual NLP/IR dan metrik (EM/F1).
 
-\subsection{Teori 2} \label{II.teori2}
-Untuk membuat sebuah rumus persamaan, gunakan kode \verb|\begin{equationcaptioned}| seperti dibawah: \par
-	
-\begin{equationcaptioned}[eq:2.sederhana]{
-	x + 1 = 2
-}{
-	Rumus sederhana % Caption rumus
-}
-\end{equationcaptioned}
+\section{Sintesis Literatur Primer}
+\begin{enumerate}[noitemsep]
+    \item \textbf{PDFTriage} \cite{saad2023pdftriage}: menunjukkan pentingnya segmentasi
+    layout-aware untuk QA PDF; relevan untuk SOP/pedoman multi-bab.
+    \item \textbf{SEACrowd} \cite{lovenia2024seacrowd}: menyoroti ketersediaan data dan
+    pentingnya evaluasi bahasa Indonesia dalam lanskap Asia Tenggara.
+    \item \textbf{IndoNLU/IndoBERT(-Lite)} \cite{wilie2020indonlu,wilie2020indobert}:
+    menyediakan model dasar efisien untuk \textit{fine-tuning} QA Indonesia.
+    \item \textbf{DPR} \cite{karpukhin2020dpr}: \textit{dense retriever} untuk memilih
+    paragraf; cocok digabung dengan reader IndoBERT-Lite.
+    \item \textbf{SLP} \cite{jurafsky2025slp}: kerangka teori NLP/IR untuk merapikan
+    definisi dan metrik evaluasi.
+\end{enumerate}
 
-Teks caption rumus tidak akan muncul di teks, tetapi akan muncul di Daftar Rumus. \par
+\section{State-of-the-Art dan Celah Riset}
+Praktik mutakhir. Pipeline QA modern memadukan retriever padat (DPR/ColBERT) dan
+reader transformer; RAG \cite{lewis2020rag} mengurangi beban konteks panjang dengan
+retrieval terpisah; PDFTriage menambah perspektif layout-aware.
 
-\begin{equationcaptioned}[eq:2.mae]{
-    MAE = \frac{1}{n} \sum_{i=1}^{n} \left| y_i - \hat{y}_i \right|
-}{
-    Mean Absolute Error (MAE)
-}
-\end{equationcaptioned}
+Terdapat beberapa \textit{research gap} yang bisa diidentifikasi:
+\begin{enumerate}[noitemsep]
+    \item Belum ada evaluasi terukur IndoBERT-Lite untuk QA PDF institusional berbahasa
+    Indonesia dengan struktur bab/subbab.
+    \item Belum ada perbandingan sistematis segmentasi PDF (blok/halaman vs paragraf
+    logis) terhadap kualitas retrieval dan jawaban.
+    \item Pelacakan sumber (paragraf/halaman) pada jawaban QA PDF Indonesia belum
+    distandarkan.
+\end{enumerate}
 
-Berikut adalah contoh penulisan persamaan yang lebih kompleks, yaitu persamaan distribusi normal. \par
+\section{Implikasi untuk Penelitian Ini}
+\begin{enumerate}[noitemsep]
+    \item Merancang pipeline: ekstraksi + segmentasi PDF (layout-aware), indexing
+    (sparse/dense), seleksi paragraf, lalu reader IndoBERT-Lite yang di-\textit{fine-
+    tune}.
+    \item Menyediakan evaluasi EM/F1 dan analisis kesalahan terpisah antara kegagalan
+    retrieval dan ekstraksi; menyertakan referensi paragraf/halaman.
+    \item Membandingkan skema segmentasi (layout-aware vs paragraf polos) untuk mengukur
+    dampaknya pada presisi retrieval dan kualitas jawaban.
+\end{enumerate}
 
-\begin{equationcaptioned}[eq:2.mae]{
-		P(x) = \frac{1}{{\sigma \sqrt {2\pi } }}e^{{{ - \left( {x - \mu } \right)^2 } \mathord{\left/ {\vphantom {{ - \left( {x - \mu } \right)^2 } {2\sigma ^2 }}} \right. \kern-\nulldelimiterspace} {2\sigma ^2 }}}
-	}{
-		Distribusi Normal
-	}
-\end{equationcaptioned}
-
-Jika menuliskan banyak persamaan secara berurutan, gunakan  \verb|\begin{split}|: \par
-
-\begin{equationcaptioned}[eq:2.mae]{
-		\begin{split} 
-			2x - 5y &=  8 \\ 
-			3x + 9y &=  -12
-		\end{split}
-	}{
-		Sistem persamaan linier
-	}
-\end{equationcaptioned}
+\section{Ringkasan Literatur} \label{II.Ringkasan}
+\begin{longtable}{|p{0.04\textwidth}|p{0.26\textwidth}|p{0.26\textwidth}|p{0.14\textwidth}|p{0.2\textwidth}|}
+    \caption{Ringkasan literatur kunci} \label{table:2.literasi}\\
+    \hline
+    \textbf{No.} & \textbf{Judul/Referensi} & \textbf{Masalah} & \textbf{Metode} & \textbf{Hasil/Relevansi} \\
+    \hline
+    \endfirsthead
+    \hline
+    \textbf{No.} & \textbf{Judul/Referensi} & \textbf{Masalah} & \textbf{Metode} & \textbf{Hasil/Relevansi} \\
+    \hline
+    \endhead
+    1 & PDFTriage \cite{saad2023pdftriage} & QA dokumen PDF panjang/berstruktur & Segmentasi layout + QA & Akurasi meningkat saat struktur halaman dipertahankan \\
+    \hline
+    2 & SEACrowd \cite{lovenia2024seacrowd} & Kesenjangan data/benchmark SEA & Kumpulan korpus \& tugas multimodal & Legitimasi evaluasi bahasa Indonesia \\
+    \hline
+    3 & IndoNLU/IndoBERT \cite{wilie2020indonlu,wilie2020indobert} & Kurangnya backbone bahasa Indonesia & Pretrained LM + benchmark & Backbone efisien untuk QA Indonesia \\
+    \hline
+    4 & DPR \cite{karpukhin2020dpr} & Pemilihan paragraf relevan QA & \textit{Dense passage retrieval} & Baseline retriever untuk pipeline PDF \\
+    \hline
+    5 & SLP \cite{jurafsky2025slp} & Kerangka teori NLP/IR & Buku teks & Definisi formal, metrik EM/F1 \\
+    \hline
+\end{longtable}
