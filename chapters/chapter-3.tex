@@ -13,6 +13,35 @@ Penelitian ini merancang dan mengevaluasi sistem QA PDF berbahasa Indonesia berb
     \item Evaluasi berlapis (komponen, end-to-end, ablation, V\&V).
 \end{enumerate}
 
+Visual alur penelitian ditunjukkan pada Gambar \ref{fig:alur-penelitian}.
+
+\begin{figure}[H]
+    \centering
+    \usetikzlibrary{arrows.meta, positioning, shapes.geometric}
+    \resizebox{0.9\linewidth}{!}{%
+        \begin{tikzpicture}[
+            node distance=0.75cm,
+            >=Latex,
+            process/.style={rectangle, rounded corners=2pt, draw=black, thick, text width=8cm, minimum height=1.1cm, align=center},
+            feedback/.style={->, thick, dashed}
+        ]
+            \node (data) [process] {Akuisisi \& kurasi data (IndoQA + PDF institusional)};
+            \node (extract) [process, below=of data] {Ekstraksi \& segmentasi PDF (layout-aware; \textit{fixed window})};
+            \node (index) [process, below=of extract] {Indeks \& \textit{retrieval} (BM25; opsional dense)};
+            \node (reader) [process, below=of index] {\textit{Fine-tuning} reader IndoBERT-Lite (IndoQA)};
+            \node (eval) [process, below=of reader] {Evaluasi berlapis (komponen; end-to-end PDF; ablation; V\&V)};
+
+            \draw[->, thick] (data) -- (extract);
+            \draw[->, thick] (extract) -- (index);
+            \draw[->, thick] (index) -- (reader);
+            \draw[->, thick] (reader) -- (eval);
+            \draw[feedback] (eval.west) to[bend left=35] node[left=0.3cm, align=center, font=\footnotesize]{Iterasi/\\perbaikan} (extract.west);
+        \end{tikzpicture}%
+    }
+    \caption{Alur penelitian sistem QA PDF berbasis IndoBERT-Lite.}
+    \label{fig:alur-penelitian}
+\end{figure}
+
 \section{Metode Pengumpulan Data} \label{III.Pengumpulan}
 Sumber data sekunder. Dataset IndoQA \cite{indoqa2023} (konteks--pertanyaan--
 jawaban) digunakan untuk \textit{fine-tuning} dan validasi reader, dengan split
@@ -36,6 +65,8 @@ antarmuka. Konsep \textit{retrieval-augmented} \cite{lewis2020rag,karpukhin2020d
 dasar, sementara PDFTriage menekankan struktur dokumen \cite{saad2023pdftriage}.
 
 \subsection{Pra-pemrosesan dan Segmentasi}
+Tahap ini menormalkan teks PDF yang sering berisi spasi/kode rusak dan batas paragraf
+tak konsisten, agar kandidat paragraf stabil untuk \textit{retrieval} dan reader.
 \begin{itemize}
     \item Normalisasi karakter (Unicode, spasi), penggabungan tanda baca per kalimat/
     paragraf. Untuk retrieval sparse: \textit{lowercase}, normalisasi angka/tanggal,
@@ -46,6 +77,8 @@ dasar, sementara PDFTriage menekankan struktur dokumen \cite{saad2023pdftriage}.
 \end{itemize}
 
 \subsection{Indeks dan Retrieval}
+Retrieval sparse (BM25) dipakai sebagai baseline yang stabil untuk dokumen panjang,
+sedangkan dense retrieval hanya pembanding recall; \textit{top-k} menjaga beban reader.
 \begin{itemize}
     \item BM25 (Pyserini/Lucene) sebagai baseline: $k1\approx0{,}9$--$1{,}2$, $b\approx
     0{,}4$--$0{,}75$, \textit{top-k} awal = 10.
@@ -55,6 +88,9 @@ dasar, sementara PDFTriage menekankan struktur dokumen \cite{saad2023pdftriage}.
 \end{itemize}
 
 \subsection{Model QA dan Fine-tuning}
+IndoBERT-Lite dipilih karena ringan namun terlatih SQuAD-ID; \textit{fine-tuning} pada
+IndoQA memindahkan pengetahuan ke domain PDF. Hiperparameter mengikuti praktik standar
+QA ekstraktif agar konvergen dengan sumber daya terbatas.
 \begin{itemize}
     \item Basis: \texttt{Wikidepia/indobert-lite-squad} (extractive QA).
     \item Data: IndoQA train/val/test.
@@ -65,11 +101,15 @@ dasar, sementara PDFTriage menekankan struktur dokumen \cite{saad2023pdftriage}.
 \end{itemize}
 
 \subsection{Inferensi End-to-End}
+Pipeline mengalir dari pertanyaan ke retrieval kandidat lalu reader memilih span
+terbaik; skor membantu memilih jawaban dan melampirkan sumber halaman/paragraf.
 Menerima pertanyaan $\rightarrow$ \textit{retrieve} \textit{top-k} paragraf $\rightarrow$
 reader memproduksi span jawaban + skor $\rightarrow$ pilih skor tertinggi $\rightarrow$
 kembalikan jawaban beserta paragraf/halaman sumber.
 
 \subsection{Kontrol Versi \& Reproduksibilitas}
+Reproducibility dijaga lewat berkas lingkungan, konfigurasi eksperimen, dan jejak
+versi sehingga eksperimen dapat diulang, diaudit, atau dilanjutkan.
 \begin{itemize}
     \item Berkas lingkungan (\texttt{requirements.txt}), konfigurasi YAML untuk
     hiperparameter, \textit{random seed}, dan jejak \textit{commit} model.
@@ -78,12 +118,16 @@ kembalikan jawaban beserta paragraf/halaman sumber.
 
 \section{Metode Pengujian/Validasi} \label{III.Pengujian}
 \subsection{Evaluasi Komponen}
+Metrik dipilih untuk memisahkan kinerja retrieval dan reader, sehingga sumber galat
+terlihat jelas sebelum diuji end-to-end.
 \begin{itemize}
     \item Retrieval-only: Recall@k (k $\in\{1,3,5,10\}$), MRR@k terhadap paragraf emas.
     \item Reader-only (IndoQA): EM dan F1 pada val/test IndoQA.
 \end{itemize}
 
 \subsection{Evaluasi End-to-End PDF}
+Mengukur EM/F1 pada Q--A PDF menunjukkan performa gabungan retrieval+reader pada domain
+target, sekaligus menilai keterlacakan sumber.
 \begin{itemize}
     \item Dataset: himpunan Q--A anotasi PDF.
     \item Prosedur: retrieval $\rightarrow$ reader per pertanyaan; ukur EM/F1; catat
@@ -91,6 +135,8 @@ kembalikan jawaban beserta paragraf/halaman sumber.
 \end{itemize}
 
 \subsection{Uji Statistik dan Ablasi}
+Bootstrap dan uji McNemar memberi signifikansi; ablation menguji sensitivitas terhadap
+variasi segmentasi, \textit{top-k}, dan jenis retriever.
 \begin{itemize}
     \item Bootstrap 1000$\times$ untuk CI 95\% EM/F1; uji McNemar untuk dua sistem.
     \item Ablasi: segmentasi layout-aware vs paragraf polos; variasi \textit{top-k}
@@ -98,6 +144,8 @@ kembalikan jawaban beserta paragraf/halaman sumber.
 \end{itemize}
 
 \subsection{Validasi Ahli \& Kegunaan (opsional)}
+Penilaian ahli dan uji kegunaan melengkapi metrik otomatis dengan kualitas jawaban dan
+kelayakan pakai di konteks institusional.
 \begin{itemize}
     \item \textit{Expert review}: 20 sampel jawaban dinilai 3 penilai
     (benar/parsial/salah) + justifikasi.
@@ -106,6 +154,8 @@ kembalikan jawaban beserta paragraf/halaman sumber.
 \end{itemize}
 
 \subsection{Kriteria Penerimaan}
+Ambang diterapkan untuk memastikan sistem melewati baseline publik dan layak dipakai
+di PDF target.
 \begin{itemize}
     \item Reader (IndoQA): F1 $\geq$ baseline publik HF.
     \item End-to-end PDF: F1 $\geq$ 0{,}60 dan \textit{traceability} $\geq$ 95\%.
@@ -113,6 +163,8 @@ kembalikan jawaban beserta paragraf/halaman sumber.
 \end{itemize}
 
 \subsection{Risiko dan Mitigasi}
+Risiko utama (scan, jawaban pendek, komputasi) diantisipasi dengan batasan data,
+penyetelan panjang jawaban, dan efisiensi pelatihan.
 \begin{itemize}
     \item PDF scan/gambar: dikecualikan; OCR hanya pekerjaan lanjutan.
     \item Jawaban sangat pendek: atur \texttt{max\_answer\_length} dan normalisasi
